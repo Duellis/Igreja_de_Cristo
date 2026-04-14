@@ -472,14 +472,17 @@ function init(){
       save('hinos',hinos); save('recados',recados); save('albumVideos',albumVideos);
       save('albumMural',albumMural); save('estudos',estudos);
       renderTudo();
+      playerInit(); // Iniciar player após dados carregados do servidor
     })
     .catch(function(){
       // Sem servidor (aberto localmente) — usar localStorage ou demo
       if(!hinos.length) hinos=demoHinos.slice();
       if(!recados.length) recados=demoRecados.slice();
       renderTudo();
+      playerInit();
     });
   renderTudo(); // Renderizar imediatamente com o que tem (evita tela vazia)
+  playerInit(); // Tentar iniciar com dados locais também
 }
 function mesclarPorId(local, servidor, fallback){
   // Se não tem nada local, usa servidor
@@ -1483,7 +1486,6 @@ function excluirEstudo(id){
 }
 
 init();
-setTimeout(playerInit,200);
 </script>
 
 <div class="overlay" id="formEstudoOverlay">

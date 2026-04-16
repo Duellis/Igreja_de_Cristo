@@ -152,7 +152,7 @@ footer{border-top:1px solid var(--border);padding:22px 18px;text-align:center;ma
 }
 /* Linha decorativa superior */
 .historia-card::before{
-  content:'✦ ✝ ✦';
+  content:'\2605  \271D  \2605';
   display:block;
   text-align:center;
   font-size:14px;
@@ -163,7 +163,7 @@ footer{border-top:1px solid var(--border);padding:22px 18px;text-align:center;ma
 }
 /* Linha decorativa inferior */
 .historia-card::after{
-  content:'✦ ✝ ✦';
+  content:'\2605  \271D  \2605';
   display:block;
   text-align:center;
   font-size:14px;
@@ -343,7 +343,7 @@ footer{border-top:1px solid var(--border);padding:22px 18px;text-align:center;ma
   <!-- PLAYER CONTÍNUO -->
   <div class="hino-player" id="hinoPlayer" style="display:none">
     <div class="hino-player-top">
-      <div class="hino-player-disc" id="playerDisc">♪</div>
+      <div class="hino-player-disc" id="playerDisc" style="font-family:serif;">&#9836;</div>
       <div class="hino-player-info">
         <div class="hino-player-titulo" id="playerTitulo">—</div>
         <div class="hino-player-sub" id="playerSub">Selecione um hino para tocar</div>
@@ -358,11 +358,11 @@ footer{border-top:1px solid var(--border);padding:22px 18px;text-align:center;ma
     </div>
     <audio id="playerAudio" preload="none" style="display:none"></audio>
     <div class="hino-player-controls">
-      <button class="hpc-btn shuffle" id="btnShuffle" onclick="toggleShuffle()" title="Aleatório">⇄</button>
-      <button class="hpc-btn prev" onclick="playerAnterior()" title="Anterior">⏮</button>
-      <button class="hpc-btn play" id="btnPlay" onclick="togglePlay()" title="Play/Pause">▶</button>
-      <button class="hpc-btn next" onclick="playerProximo()" title="Próximo">⏭</button>
-      <button class="hpc-btn repeat" id="btnRepeat" onclick="toggleRepeat()" title="Repetir">↻</button>
+      <button class="hpc-btn shuffle" id="btnShuffle" onclick="toggleShuffle()" title="Aleatório" style="font-size:16px;font-family:sans-serif;">&#8644;</button>
+      <button class="hpc-btn prev" onclick="playerAnterior()" title="Anterior">&#9198;</button>
+      <button class="hpc-btn play" id="btnPlay" onclick="togglePlay()" title="Play/Pause">&#9654;</button>
+      <button class="hpc-btn next" onclick="playerProximo()" title="Próximo">&#9197;</button>
+      <button class="hpc-btn repeat" id="btnRepeat" onclick="toggleRepeat()" title="Repetir">&#8635;</button>
     </div>
     <div class="hino-player-progress">
       <div class="hino-progress-bar" onclick="playerSeek(event)" id="progressBar">
@@ -611,12 +611,15 @@ function renderHinos(l){
   l.forEach(function(h){ window._hinosMap[h.id]=h; });
 }
 function audioUrlLimpa(url){
-  // Dropbox: remover &st= temporário e garantir dl=1
-  if((url||'').includes('dropbox.com')){
-    url=url.replace(/&st=[a-z0-9]+/g,'').replace(/\?st=[a-z0-9]+&?/g,'?');
-    url=url.replace('?dl=0','?dl=1').replace('&dl=0','&dl=1');
-    if(!url.includes('dl=1')) url+=(url.includes('?')?'&':'?')+'dl=1';
-  }
+  if(!(url||'').includes('dropbox.com')) return url;
+  // Remover token temporário &st=
+  url=url.replace(/&st=[a-z0-9]+/gi,'').replace(/[?&]st=[a-z0-9]+/gi,'');
+  // Garantir dl=1
+  url=url.replace('?dl=0','?dl=1').replace('&dl=0','&dl=1');
+  if(!url.includes('dl=1')) url+=(url.includes('?')?'&':'?')+'dl=1';
+  // Converter para URL de conteúdo direto (funciona no Safari/iPhone)
+  url=url.replace('www.dropbox.com','dl.dropboxusercontent.com');
+  url=url.replace('?dl=1','').replace('&dl=1','');
   return url;
 }
 function isDropboxLink(url){ return (url||'').includes('dropbox.com'); }
@@ -1271,7 +1274,7 @@ function playerBadgeKeydown(e){
 function playerAtualizarBtnPlay(tocando){
   var btn=document.getElementById('btnPlay');
   var disc=document.getElementById('playerDisc');
-  if(btn) btn.textContent=tocando?'⏸':'▶';
+  if(btn) btn.innerHTML=tocando?'&#9646;&#9646;':'&#9654;';
   if(disc){ if(tocando) disc.classList.add('girando'); else disc.classList.remove('girando'); }
 }
 function togglePlay(){

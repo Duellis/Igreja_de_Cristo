@@ -419,7 +419,11 @@ footer{border-top:1px solid var(--border);padding:22px 18px;text-align:center;ma
 </div>
 <div class="admin-section" id="adm-mural"><div style="display:flex;gap:8px;margin-bottom:12px;"><button class="btn btn-gold" onclick="abrirFormMural()">+ Foto</button></div><div id="adminMuralList"></div></div>
 <div class="admin-section" id="adm-cadastros"><div style="display:flex;gap:8px;margin-bottom:12px;"><button class="btn btn-ghost btn-sm" onclick="exportarDados('cadastros')">↓ Exportar</button></div><div id="adminCadastrosList"></div></div>
-<div class="admin-section" id="adm-config"><h3 style="font-size:15px;color:var(--gold);margin-bottom:12px;">Backup</h3><div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="btn btn-gold btn-sm" onclick="exportarTudo()">☁ Publicar Atualização</button><button class="btn btn-ghost btn-sm" onclick="exportarBackup()">↓ Só Backup</button><label class="btn btn-ghost btn-sm" style="cursor:pointer;">↑ Importar Tudo<input type="file" accept=".json" onchange="importarTudo(event)" style="display:none"></label></div><div style="margin-top:12px;padding:12px;background:rgba(192,57,43,.08);border:1px solid rgba(192,57,43,.2);border-radius:8px;"><p style="font-size:12px;color:var(--text3);margin-bottom:8px;">⚠️ Se a importação falhar por falta de memória, limpe os dados primeiro e depois importe.</p><button class="btn btn-danger btn-sm" onclick="limparTodosDados()">🗑 Limpar Todos os Dados</button></div><div style="margin-top:18px;"><h3 style="font-size:15px;color:var(--gold);margin-bottom:10px;">Alterar Senha</h3><div class="form-group" style="max-width:260px;"><label>Nova Senha</label><input type="password" id="novaSenha" placeholder="Nova senha"></div><button class="btn btn-gold btn-sm" onclick="alterarSenha()">Salvar</button></div></div></div></div>
+<div class="admin-section" id="adm-config"><h3 style="font-size:15px;color:var(--gold);margin-bottom:12px;">Backup</h3><div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="btn btn-gold btn-sm" onclick="exportarTudo()">☁ Publicar Atualização</button><button class="btn btn-ghost btn-sm" onclick="exportarBackup()">↓ Só Backup</button><label class="btn btn-ghost btn-sm" style="cursor:pointer;">↑ Importar Tudo<input type="file" accept=".json" onchange="importarTudo(event)" style="display:none"></label></div><div style="margin-top:12px;padding:12px;background:rgba(192,57,43,.08);border:1px solid rgba(192,57,43,.2);border-radius:8px;"><p style="font-size:12px;color:var(--text3);margin-bottom:8px;">⚠️ Se a importação falhar por falta de memória, limpe os dados primeiro e depois importe.</p><button class="btn btn-danger btn-sm" onclick="limparTodosDados()">🗑 Limpar Todos os Dados</button>
+<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
+<p style="font-size:12px;color:var(--text3);margin-bottom:8px;">🔑 Token do GitHub para publicação automática:</p>
+<button class="btn btn-ghost btn-sm" onclick="configurarToken()">⚙ Configurar Token</button>
+</div></div><div style="margin-top:18px;"><h3 style="font-size:15px;color:var(--gold);margin-bottom:10px;">Alterar Senha</h3><div class="form-group" style="max-width:260px;"><label>Nova Senha</label><input type="password" id="novaSenha" placeholder="Nova senha"></div><button class="btn btn-gold btn-sm" onclick="alterarSenha()">Salvar</button></div></div></div></div>
 
 <div class="overlay" id="formHinoOverlay"><div class="modal"><h2 class="modal-title" id="formHinoTitle">Adicionar Hino</h2><div id="formHinoAlert"></div><div class="form-row"><div class="form-group" style="flex:2;"><label>Título *</label><input type="text" id="fHTitulo" placeholder="Ex: O Senhor é Meu Pastor"></div><div class="form-group"><label>Referência</label><input type="text" id="fHRef" placeholder="Sl 23:1-6"></div></div><div class="form-group"><label>Letra</label><textarea id="fHLetra" placeholder="Letra completa…"></textarea></div><div class="form-group"><label>Áudio (Dropbox ou Drive)</label><input type="text" id="fHAudio" placeholder="https://www.dropbox.com/scl/… ou drive.google.com/…"><div class="form-hint">Cole o link do Dropbox (preferido) ou Google Drive.</div></div><div class="modal-footer"><button class="btn btn-ghost" onclick="fecharModal('formHinoOverlay')">Cancelar</button><button class="btn btn-gold" onclick="salvarHino()">Salvar</button></div></div></div>
 
@@ -989,6 +993,15 @@ function renderAdminCadastros(){const w=document.getElementById('adminCadastrosL
 function excluirCadastro(id){if(!confirm('Excluir?'))return;cadastros=cadastros.filter(x=>x.id!==id);save('cadastros',cadastros);renderAdminCadastros();}
 function exportarDados(t){const d=t==='hinos'?hinos:t==='recados'?recados:t==='videos'?albumVideos:t==='mural'?albumMural:cadastros;const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(d,null,2)],{type:'application/json'}));a.download=`igreja_${t}.json`;a.click();}
 function importarDados(e,t){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(!Array.isArray(d))throw 0;if(!confirm(`Substituir por ${d.length} itens?`))return;if(t==='hinos'){hinos=d;save('hinos',hinos);renderHinos(hinos);renderAdminHinos();}else if(t==='recados'){recados=d;save('recados',recados);renderRecados();renderAdminRecados();}else if(t==='videos'){videos=d;save('videos',videos);renderVideos();renderAdminVideos();}alert('Pronto!');}catch{alert('Arquivo inválido.');}};r.readAsText(f);e.target.value='';}
+function configurarToken(){
+  var atual=localStorage.getItem(SP+'ghToken');
+  var msg=atual?'Token atual configurado. Cole um novo para substituir:':'Cole o seu token do GitHub:';
+  var t=prompt(msg);
+  if(t&&t.trim()){
+    localStorage.setItem(SP+'ghToken',t.trim());
+    alert('✅ Token salvo! Agora o botão "Publicar Atualização" funcionará automaticamente.');
+  }
+}
 function limparTodosDados(){
   if(!confirm('⚠️ ATENÇÃO: isso apagará TODOS os dados do site (hinos, recados, vídeos, estudos, história).\n\nCertifique-se de ter um backup antes!\n\nDeseja continuar?')) return;
   var chaves=['hinos','recados','albumVideos','albumMural','cadastros','estudos','historiaTitulo','historiaTexto'];
@@ -1008,19 +1021,71 @@ function exportarBackup(){
   a.download='backup_'+new Date().toISOString().slice(0,10)+'.json';
   a.click();
 }
+var _ghConfig={
+  owner:'Duellis',
+  repo:'Igreja_de_Cristo',
+  file:'dados.json',
+  get token(){ return localStorage.getItem(SP+'ghToken')||''; }
+};
+
 function exportarTudo(){
   var d={hinos:hinos,recados:recados,albumVideos:albumVideos,albumMural:albumMural,cadastros:cadastros,estudos:estudos,
     historiaTitulo:localStorage.getItem(SP+'historiaTitulo')||'',
     historiaTexto:localStorage.getItem(SP+'historiaTexto')||'',v:'3.0'};
   var json=JSON.stringify(d);
-  var kb=Math.round(json.length/1024);
-  var a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([json],{type:'application/json'}));
-  a.download='dados.json'; // Nome padrão para upload direto no GitHub
-  a.click();
-  setTimeout(function(){
-    alert('✅ Arquivo "dados.json" gerado! ('+kb+' KB)\n\nPara publicar as atualizações:\n1. Acesse github.com\n2. Abra seu repositório\n3. Faça upload deste arquivo (substitui o anterior)\n4. Em ~1 minuto todos verão o conteúdo novo!');
-  },500);
+
+  // Verificar se token está configurado
+  if(!_ghConfig.token){
+    var t=prompt('Cole seu token do GitHub para publicar:\n(Você só precisa fazer isso uma vez)');
+    if(!t||!t.trim()){ alert('Token necessário para publicar.'); return; }
+    localStorage.setItem(SP+'ghToken', t.trim());
+  }
+
+  // Mostrar indicador de carregamento
+  var btnPublicar=document.querySelector('[onclick="exportarTudo()"]');
+  if(btnPublicar){ btnPublicar.textContent='⏳ Publicando...'; btnPublicar.disabled=true; }
+
+  // Passo 1: buscar o SHA atual do arquivo (necessário para atualizar)
+  var apiUrl='https://api.github.com/repos/'+_ghConfig.owner+'/'+_ghConfig.repo+'/contents/'+_ghConfig.file;
+  
+  fetch(apiUrl, {
+    headers:{
+      'Authorization':'token '+_ghConfig.token,
+      'Accept':'application/vnd.github.v3+json'
+    }
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(fileInfo){
+    var sha=fileInfo.sha;
+    var content=btoa(unescape(encodeURIComponent(json)));
+    
+    // Passo 2: enviar o arquivo atualizado
+    return fetch(apiUrl, {
+      method:'PUT',
+      headers:{
+        'Authorization':'token '+_ghConfig.token,
+        'Accept':'application/vnd.github.v3+json',
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify({
+        message:'Atualização do site - '+new Date().toLocaleString('pt-BR'),
+        content:content,
+        sha:sha
+      })
+    });
+  })
+  .then(function(r){
+    if(btnPublicar){ btnPublicar.textContent='☁ Publicar Atualização'; btnPublicar.disabled=false; }
+    if(r.ok){
+      alert('✅ Site atualizado com sucesso!\n\nEm cerca de 1 minuto todos os visitantes verão o novo conteúdo.');
+    } else {
+      return r.json().then(function(e){ throw new Error(e.message); });
+    }
+  })
+  .catch(function(err){
+    if(btnPublicar){ btnPublicar.textContent='☁ Publicar Atualização'; btnPublicar.disabled=false; }
+    alert('❌ Erro ao publicar: '+err.message+'\n\nUse o botão "Só Backup" para baixar o arquivo manualmente.');
+  });
 }
 function salvarComTratamento(chave, valor){
   try {
